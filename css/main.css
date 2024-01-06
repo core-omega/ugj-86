@@ -1,0 +1,173 @@
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background-color: black;
+    height: 100%;
+}
+
+.tagline {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 10px;
+    opacity: 0.33;
+    color: white;
+    font-family: monospace;
+}
+
+.overlay-container {
+    display: inline;
+    transition-property: height;
+    transition-duration: 1s;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: 0;
+    width: 100%;
+    background-color: rgba(0,0,0,0.75);
+    z-index: 2;
+}
+
+.overlay-display {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    color: white;
+    font-family: monospace;
+    font-size: 2em;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+}
+
+.information {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 10px;
+    opacity: 0.33;
+    color: white;
+    font-family: monospace;
+}
+
+.three-container {
+    width:100%;
+    height:100%;
+}
+
+.text-container {
+    position: fixed;
+    bottom: 0px;
+    height: 100px;
+    width: 100%;
+}
+
+ .text-portrait {
+    height: 100%;
+    width: 125px;
+    float: left;
+ }
+
+ .text-display {
+    height: 100%;
+    margin: 8px;
+    margin-left: 133px;
+    color: white;
+    font-family: monospace;
+ }
+
+.sewer-title {
+    margin-right: 3px;
+    color: green;
+    font-size: 2.2em;
+}
+
+.game-title {
+    font-size: 2em;
+}
+
+#start-button {
+    cursor: grab;
+    color: green;
+}
+
+
+.character {
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    width: 33%;
+    font-family: monospace;
+    font-size: 0.7em;
+    color: white;
+    border-radius: 8px;
+    border: solid #efefef 2px;
+    transform: translate(100%, -50%);
+    -ms-transform: translate(100%, -50%);
+}
+
+.character-title {
+    font-size: 1.1em;
+}
+
+.character-name {
+    font-size: 0.8em;
+    color: green;
+}
+
+.character-level {
+    font-size: 0.8em;
+}
+
+.character-experience {
+    font-size: 0.6em;
+    color: lightgray;
+    margin-bottom: 5px;
+}
+
+.character-stats {
+    font-size: 0.7em;
+    color: lightgray;
+    border-top: 1px solid darkgray;
+}
+
+#close-button {
+    float: right;
+    color: red;
+    cursor: pointer;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 1px solid white;
+    border-radius: 2px;
+    background-color: #121212;
+}
+
+.inventory {
+    text-align: left;
+    font-size: 0.7em;
+    width: 50%;
+    border-radius: 8px;
+    border: 1px solid white;
+    transform: translate(50%, -50%);
+    -ms-transform: translate(50%, -50%);
+}
+
+.inventory table {
+    width: 100%;
+}
+
+.inventory table th {
+    background-color: #232323;
+}
+
+.inventory-title {
+    font-size: 1.1em;
+}
+
