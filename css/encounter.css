@@ -1,0 +1,121 @@
+.encounter {
+    text-align: left;
+    font-size: 0.7em;
+    width: 50%;
+    border-radius: 8px;
+    border: 1px solid white;
+    transform: translate(50%, 0%);
+    -ms-transform: translate(50%, 0%);
+}
+
+.encounter-title {
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.encounter-log {
+    font-size: 0.6em;
+    color: lightskyblue;
+}
+
+.encounter-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
+
+    text-align: center;
+}
+
+.encounter-wrapper {
+    display: grid;
+    grid-template-columns: 33% 32% 33%;
+    gap: 1%;
+}
+
+.encounter-option {
+    cursor: pointer;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border: 1px dashed lightskyblue;
+    font-weight: bold;
+    text-align: center;
+}
+
+.encounter-option:hover {
+    background-color: lightskyblue;
+    color: black;
+    font-weight: bold;
+}
+
+.encounter-description {
+    padding-left: 10px;
+    font-size: 1.1em;
+    color: limegreen;
+}
+
+.result {
+    color: limegreen;
+}
+
+.fight-text {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: red;
+}
+
+#encounter-log {
+    width: 100%;
+    font-size: 1.0em;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: lightskyblue;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.battle {
+    text-align: left;
+    font-size: 0.7em;
+    width: 75%;
+    border-radius: 8px;
+    border: 1px solid white;
+    transform: translate(12%, 0%);
+    -ms-transform: translate(12%, 0%);
+}
+
+.battle-title {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    width: 100%;
+    color: red;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.enemy-description {
+    color: lightpink;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.enemy-life {
+    color: lightcoral;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.player-description {
+    color: limegreen;
+}
+
+.player-life {
+    color: lightgreen;
+}
+
+.battle-menu-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
+    display: grid;
+    grid-template-columns: 50% 24% 24%;
+    gap: 1%;
+}

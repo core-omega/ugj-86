@@ -13,6 +13,8 @@ function StartLoading() {
     let audio = GetAudioManager();
     audio.loadTrack('Intro');
     audio.loadTrack('Adventure');
+    audio.loadTrack('Encounter');
+    audio.loadTrack('Battle');
 
     let loading = GetContentLoadingManager();
     ForceShowOverlay("Loading assets ...");
@@ -22,12 +24,10 @@ function StartLoading() {
 function EntryPoint() {
     ForceHideOverlay();
     let audio = GetAudioManager();
-    
-    // audio.playTrack('Intro');
-    // setTimeout(() => {audio.loopTrack('Adventure');}, 63000);
+
     // RunStoryIntro();
 
-    GenerateFloorMap(64, 64);
+    GenerateFloorMap(96, 96);
     GetInputManager().start();
 
     let physics = GetPhysicsManager();

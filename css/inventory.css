@@ -1,0 +1,22 @@
+
+.inventory {
+    text-align: left;
+    font-size: 0.7em;
+    width: 50%;
+    border-radius: 8px;
+    border: 1px solid white;
+    transform: translate(50%, -50%);
+    -ms-transform: translate(50%, -50%);
+}
+
+.inventory table {
+    width: 100%;
+}
+
+.inventory table th {
+    background-color: #232323;
+}
+
+.inventory-title {
+    font-size: 1.1em;
+}

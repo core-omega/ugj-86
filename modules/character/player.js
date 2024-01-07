@@ -4,7 +4,7 @@ import { GetPhysicsManager } from "/modules/physics/physics";
 import { GetInputManager } from "/modules/world/input";
 import { GetFloorMap } from "/modules/world/floor";
 import * as THREE from 'three';
-import Mustache from '/lib/mustache'
+import Mustache from '/lib/mustache';
 import { ForceHideOverlay } from "../display/show";
 
 class Player {
@@ -20,6 +20,7 @@ class Player {
         this.cohesion = this.cohesionMax;
         this.force = Player.FORCE_START;
         this.affinity = Player.AFFINITY_START;
+        this.name = "The Ghost";
         this.experience = 0;
         this.level = 1;
         this.items = { };
@@ -185,7 +186,7 @@ class Player {
         const output = Mustache.render(`
             <div class='character'>
                 <div class='character-title'>Character Sheet &nbsp;&nbsp; <a id='close-button'>X</a></div>
-                <div class='character-name'>The Ghost</div>
+                <div class='character-name'>{{name}}</div>
                 <div class='character-stats'>Explored {{traveledShort}} km so far</div>
                 <div class='character-level'>Level {{level}}</div>
                 <div class='character-experience'>Experience: {{experience}} xp</div>

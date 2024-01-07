@@ -5,6 +5,7 @@ class AudioManager {
         this.context = new AudioContext();
         this.tracks = {};
         this.active = null;
+        this.source = null;
     }
 
     start(cb) {
@@ -61,12 +62,17 @@ class AudioManager {
             console.error("Track must be loaded before it can be played: " + name);
             return;
         }
+        if(this.source != null) {
+            this.source.stop();
+            this.source.disconnect();
+            this.source = null;
+        }
         let buffer = this.tracks[name].buffer;
-        let source = this.context.createBufferSource();
-        source.buffer = buffer;
-        source.loop = true;
-        source.connect(this.context.destination);
-        source.start(0);        
+        this.source = this.context.createBufferSource();
+        this.source.buffer = buffer;
+        this.source.loop = true;
+        this.source.connect(this.context.destination);
+        this.source.start(0);        
     }
 }
 

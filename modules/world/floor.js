@@ -251,7 +251,7 @@ class FloorMap {
 
 }
 
-function GenerateFloorMap() {
+function GenerateFloorMap(mapWidth, mapHeight) {
     map = new FloorMap(mapWidth, mapHeight);
     map.generate();
 }
