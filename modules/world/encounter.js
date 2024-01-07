@@ -12,7 +12,9 @@ class EncounterManager {
     static ENCOUNTER_CREATURE_FREQUENCY = 0.4;
     static ENCOUNTER_RESOLUTION_TIMEOUT = 5000;
 
-    static ENCOUNTER_LOG_CHARDELAY = 50;
+    static ENCOUNTER_LOG_CHARDELAY = 20;
+
+    static FLEE_CHANCE = 0.50;
     
     // state machine
     static NO_ENCOUNTER = 1;
@@ -24,6 +26,7 @@ class EncounterManager {
         this.lastEncounter = 0.0;
         this.logOutput = "";
         this.logOutputIndex = 0;
+        this.floor = 1;
         this.lastOutput = window.performance.now();
         this.nextEncounter = this.gaussian(EncounterManager.ENCOUNTER_RATE, EncounterManager.ENCOUNTER_STDEV);
         if(this.nextEncounter - this.lastEncounter < EncounterManager.ENCOUNTER_MAX_RATE) {
@@ -71,7 +74,7 @@ class EncounterManager {
                         ++this.logOutputIndex;
                     }
                     let endIndex = this.logOutputIndex;
-                    console.log("[encounter-log] " + this.logOutput.substring(startIndex, endIndex + 1));
+                    // console.log("[encounter-log] " + this.logOutput.substring(startIndex, endIndex + 1));
                     ++this.logOutputIndex;
                 }
                 if(this.logOutputIndex >= this.logOutput.length) {
@@ -97,17 +100,60 @@ class EncounterManager {
         this.logOutput = this.logOutput + text;
     }
 
+    endFight() {
+        document.getElementById('encounter-end').innerHTML = "<div class='encounter-option' id='encounter-end-item'>End Fight</div>";
+        this.currentEncounter = null;
+        this.state = EncounterManager.NO_ENCOUNTER;
+
+        document.getElementById('encounter-end-item').addEventListener('click', event => {
+            ForceHideOverlay();
+        });
+        let audio = GetAudioManager();
+        audio.loopTrack("Adventure");
+    }
+
     combat() {
-        if(this.currentEncounter.cohesion <= 0) {
-            console.log("[encounter] Won fight.");
+        if(this.state != EncounterManager.ENCOUNTER_FIGHT) {
+            console.log("[encounter] Tried to perform actions outside of combat.");
+            return;
         }
         let player = GetPlayer();
         let self = this;
         GetSkills()["attack"].execute(self, player, this.currentEncounter);
         GetSkills()["attack"].execute(self, this.currentEncounter, player);
-        console.log(this.currentEncounter);
         document.getElementById('enemy-life').innerHTML = Mustache.render("Cohesion: {{cohesion}} / {{cohesionMax}}", this.currentEncounter);
         document.getElementById('player-life').innerHTML = Mustache.render("Cohesion: {{cohesion}} / {{cohesionMax}}", player);
+        if(this.currentEncounter.cohesion <= 0) {
+            this.log(Mustache.render("{{name}} has been defeated!", this.currentEncounter));
+            this.log(Mustache.render("Received {{xp}} xp from combat.", this.currentEncounter));
+            player.experience += this.currentEncounter.xp;
+            this.endFight();
+        }
+        if(player.cohesion <= 0) {
+            this.log(Mustache.render("{{name}} has been defeated!", player));
+            this.endFight();
+            player.cohesion = 1;
+        }
+
+    }
+
+    flee() {
+        let self = this;
+        if(this.state != EncounterManager.ENCOUNTER_FIGHT) {
+            console.log("[encounter] Tried to perform actions outside of combat.");
+            return;
+        }
+        let player = GetPlayer();
+        if(Math.random() < EncounterManager.FLEE_CHANCE) {
+            this.log(Mustache.render("{{name}} tried to flee ... and was successful!", player));
+            this.endFight();
+        }
+        else {
+            this.log(Mustache.render("{{name}} tried to flee ... and was unable to escape!", player));
+            GetSkills()["attack"].execute(self, this.currentEncounter, player);
+            document.getElementById('enemy-life').innerHTML = Mustache.render("Cohesion: {{cohesion}} / {{cohesionMax}}", this.currentEncounter);
+            document.getElementById('player-life').innerHTML = Mustache.render("Cohesion: {{cohesion}} / {{cohesionMax}}", player);
+        }
     }
 
     fight() {
@@ -145,10 +191,12 @@ class EncounterManager {
         this.log("Entering combat.");
 
         document.getElementById('fight-option').addEventListener('click', event => {
+            audio.playSound("Selection");
             this.combat();
         });
 
         document.getElementById('flee-option').addEventListener('click', event => {
+            audio.playSound("Selection");
             this.flee();
         });
     }
@@ -180,6 +228,7 @@ class EncounterManager {
 
         var self = this;
         document.getElementById('talk-option').addEventListener('click', () => {
+            audio.playSound("Selection");
             console.log("[encounter] 'talk' selected.");
             let result = this.currentEncounter.talk(self, GetPlayer(), this.currentEncounter);
             if(result == RESULT_FIGHT) {
@@ -198,15 +247,18 @@ class EncounterManager {
         }, false);
 
         document.getElementById('fight-option').addEventListener('click', () => {
+            audio.playSound("Selection");
             console.log("[encounter] 'fight' selected.");
             this.log("<span class='result'>Fight: </span> <span class='fight-text'>THIS CREATURE SHALL BE DESTROYED!</span>");
             setTimeout(() => {
+                this.state = EncounterManager.ENCOUNTER_FIGHT;
                 this.fight();
             }, EncounterManager.ENCOUNTER_RESOLUTION_TIMEOUT);
 
         }, false);
 
         document.getElementById('leave-option').addEventListener('click', () => {
+            audio.playSound("Selection");
             let result = this.currentEncounter.leave(self, GetPlayer(), this.currentEncounter);
             if(result == RESULT_FIGHT) {
                 console.log("[encounter] 'leave' result: proceeding to fight.");
@@ -231,4 +283,4 @@ function GetEncounterManager() {
     return encounter;
 }
 
-export {GetEncounterManager};
+export {EncounterManager, GetEncounterManager};

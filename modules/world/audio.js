@@ -4,6 +4,7 @@ class AudioManager {
     constructor() {
         this.context = new AudioContext();
         this.tracks = {};
+        this.effects = {};
         this.active = null;
         this.source = null;
     }
@@ -15,6 +16,34 @@ class AudioManager {
             console.log("[audio] Context acquired.  Executing callback ...");
             cb();
         });
+    }
+
+    loadSound(name) {
+        console.log("[audio] Loading sound effect: " + name);
+        let loading = GetContentLoadingManager();
+        loading.addItem();
+        let url = "/sound/" + name + ".wav";
+
+        this.effects[name] = {
+            name: name,
+            url: url,
+            loaded: false,
+            buffer: null
+        };
+
+        let request = new XMLHttpRequest();
+        let effects = this.effects;
+        request.open('GET', url, true);
+        request.responseType = 'arraybuffer';
+        request.onload = () => {
+            this.context.decodeAudioData(request.response, function(buffer) {
+                effects[name].loaded = true;
+                effects[name].buffer = buffer;
+                console.log("[audio] Loaded effect: " + name);
+                loading.removeItem();
+            });
+        }
+        request.send();
     }
 
     loadTrack(name) {
@@ -43,6 +72,19 @@ class AudioManager {
             });
         }
         request.send();
+    }
+
+    playSound(name) {
+        if(!this.effects[name].loaded) {
+            console.error("Effect must be loaded before it can be played: " + name);
+            return;
+        }
+        let buffer = this.effects[name].buffer;
+        //FIXME: Does it leak if we don't disconnect the sources when we're done playing the sound?
+        let source = this.context.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.context.destination);
+        source.start(0);
     }
 
     playTrack(name) {

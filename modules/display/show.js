@@ -3,7 +3,7 @@ let overlayTimes = [];
 let isShowing = false;
 
 function PendingOverlay() {
-    return (overlayQueue.length == 0);
+    return (overlayQueue.length != 0);
 }
 
 function UpdateOverlay() {

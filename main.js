@@ -15,6 +15,8 @@ function StartLoading() {
     audio.loadTrack('Adventure');
     audio.loadTrack('Encounter');
     audio.loadTrack('Battle');
+    
+    audio.loadSound('Selection');
 
     let loading = GetContentLoadingManager();
     ForceShowOverlay("Loading assets ...");
@@ -25,7 +27,7 @@ function EntryPoint() {
     ForceHideOverlay();
     let audio = GetAudioManager();
 
-    // RunStoryIntro();
+    RunStoryIntro();
 
     GenerateFloorMap(96, 96);
     GetInputManager().start();

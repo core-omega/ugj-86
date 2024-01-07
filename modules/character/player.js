@@ -5,7 +5,8 @@ import { GetInputManager } from "/modules/world/input";
 import { GetFloorMap } from "/modules/world/floor";
 import * as THREE from 'three';
 import Mustache from '/lib/mustache';
-import { ForceHideOverlay } from "../display/show";
+import { PendingOverlay, ForceHideOverlay } from "../display/show";
+import { EncounterManager, GetEncounterManager } from "../world/encounter";
 
 class Player {
     static RADIUS = 0.1;
@@ -52,9 +53,21 @@ class Player {
         this.position[0] = entry[0];
         this.position[1] = entry[1];
         let input = GetInputManager();
+        let encounter = GetEncounterManager();
 
         Matter.Events.on(physics.getEngine(), 'beforeUpdate', event => {
+            // Don't process input if we're in the middle of an encounter.
+            if(encounter.state != EncounterManager.NO_ENCOUNTER) {
+                return;
+            }
+            // Don't process input if there's something being displayed right now.
+            if(PendingOverlay()) {
+                return;
+            }
             if(this.showCharacter) {
+                return;
+            }
+            if(this.showInventory) {
                 return;
             }
             let obj = physics.getObject(this.playerId);
@@ -120,6 +133,16 @@ class Player {
         let floor = GetFloorMap();
         floor.updateShroud([obj.position.y, obj.position.x]);
 
+        let encounter = GetEncounterManager();
+
+        // Don't process input if we're in the middle of an encounter.
+        if(encounter.state != EncounterManager.NO_ENCOUNTER) {
+            return;
+        }
+        // Don't process input if there's something being displayed right now.
+        if(PendingOverlay()) {
+            return;
+        }
         // FIXME: make the repetition check part of the input manager.
         if(input.isKeyDown('KeyC') && ((window.performance.now() - this.toggled['c']) / 1000.0) > Player.MAX_TOGGLE_RATE) {
             this.toggled['c'] = window.performance.now();
