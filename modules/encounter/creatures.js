@@ -1,4 +1,4 @@
-import {GetSkills} from "/modules/encounter/skills";
+import {GetSkills} from "/modules/encounter/skills.js";
 
 const RESULT_NONE = 'none';
 const RESULT_FIGHT = 'fight';

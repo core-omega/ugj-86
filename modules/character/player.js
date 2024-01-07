@@ -1,11 +1,11 @@
-import { GetRenderManager } from "/modules/display/render";
-import { ForceShowOverlay } from "/modules/display/show";
-import { GetPhysicsManager } from "/modules/physics/physics";
-import { GetInputManager } from "/modules/world/input";
-import { GetFloorMap } from "/modules/world/floor";
-import { GetAudioManager } from "/modules/world/audio";
-import { PendingOverlay, ForceHideOverlay } from "/modules/display/show";
-import { EncounterManager, GetEncounterManager } from "/modules/world/encounter";
+import { GetRenderManager } from "/modules/display/render.js";
+import { ForceShowOverlay } from "/modules/display/show.js";
+import { GetPhysicsManager } from "/modules/physics/physics.js";
+import { GetInputManager } from "/modules/world/input.js";
+import { GetFloorMap } from "/modules/world/floor.js";
+import { GetAudioManager } from "/modules/world/audio.js";
+import { PendingOverlay, ForceHideOverlay } from "/modules/display/show.js";
+import { EncounterManager, GetEncounterManager } from "/modules/world/encounter.js";
 
 import * as THREE from 'three';
 import Mustache from '/lib/mustache';

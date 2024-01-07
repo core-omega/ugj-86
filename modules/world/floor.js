@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { ShowOverlay } from '/modules/display/show';
-import { GetRenderManager } from '/modules/display/render';
-import { GetPhysicsManager } from '/modules/physics/physics';
-import { GetPlayer } from '/modules/character/player';
+import { ShowOverlay } from '/modules/display/show.js';
+import { GetRenderManager } from '/modules/display/render.js';
+import { GetPhysicsManager } from '/modules/physics/physics.js';
+import { GetPlayer } from '/modules/character/player.js';
 
 class FloorMap {
     static MIN_SEPERATION = 20;

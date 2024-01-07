@@ -1,10 +1,10 @@
-import {ForceShowOverlay, ForceHideOverlay} from "/modules/display/show";
-import {GetAudioManager} from "/modules/world/audio";
-import {GetPlayer} from "/modules/character/player";
-import {GetSkills} from "/modules/encounter/skills";
-import {GetFloorMap} from "/modules/world/floor";
-import {GetCreatures, RESULT_FIGHT, RESULT_NONE, RESULT_RESOLVE} from "/modules/encounter/creatures";
-import Mustache from '/lib/mustache';
+import {ForceShowOverlay, ForceHideOverlay} from "/modules/display/show.js";
+import {GetAudioManager} from "/modules/world/audio.js";
+import {GetPlayer} from "/modules/character/player.js";
+import {GetSkills} from "/modules/encounter/skills.js";
+import {GetFloorMap} from "/modules/world/floor.js";
+import {GetCreatures, RESULT_FIGHT, RESULT_NONE, RESULT_RESOLVE} from "/modules/encounter/creatures.js";
+import Mustache from '/lib/mustache.js';
 
 class EncounterManager {
     static ENCOUNTER_RATE = 0.7;  // on average, one encounter per every 10 game km

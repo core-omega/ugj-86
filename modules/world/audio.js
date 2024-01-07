@@ -1,4 +1,4 @@
-import { GetContentLoadingManager } from "/modules/world/loading";
+import { GetContentLoadingManager } from "/modules/world/loading.js";
 
 class AudioManager {
     constructor() {

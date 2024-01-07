@@ -1,5 +1,5 @@
-import {ShowOverlay} from '/modules/display/show';
-import {GetAudioManager} from '/modules/world/audio';
+import {ShowOverlay} from '/modules/display/show.js';
+import {GetAudioManager} from '/modules/world/audio.js';
 
 function RunStoryIntro() {
     let audio = GetAudioManager();

@@ -1,13 +1,13 @@
-import { GenerateFloorMap, GetFloorMap } from '/modules/world/floor';
-import { RunStoryIntro } from '/modules/story/story';
-import { ForceShowOverlay, ForceHideOverlay } from '/modules/display/show';
-import { CreateRenderManager, GetRenderManager } from '/modules/display/render';
-import { GetPhysicsManager } from '/modules/physics/physics';
-import { GetPlayer } from '/modules/character/player'
-import { GetInputManager } from '/modules/world/input';
-import { GetAudioManager } from '/modules/world/audio';
-import { GetContentLoadingManager} from '/modules/world/loading';
-import { GetEncounterManager } from '/modules/world/encounter';
+import { GenerateFloorMap, GetFloorMap } from '/modules/world/floor.js';
+import { RunStoryIntro } from '/modules/story/story.js';
+import { ForceShowOverlay, ForceHideOverlay } from '/modules/display/show.js';
+import { CreateRenderManager, GetRenderManager } from '/modules/display/render.js';
+import { GetPhysicsManager } from '/modules/physics/physics.js';
+import { GetPlayer } from '/modules/character/player.js'
+import { GetInputManager } from '/modules/world/input.js';
+import { GetAudioManager } from '/modules/world/audio.js';
+import { GetContentLoadingManager} from '/modules/world/loading.js';
+import { GetEncounterManager } from '/modules/world/encounter.js';
 
 function StartLoading() {
     let audio = GetAudioManager();
@@ -27,7 +27,7 @@ function EntryPoint() {
     ForceHideOverlay();
     let audio = GetAudioManager();
 
-    //RunStoryIntro();
+    RunStoryIntro();
 
     GenerateFloorMap(64, 64);
     GetInputManager().start();
