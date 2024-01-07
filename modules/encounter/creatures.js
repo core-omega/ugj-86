@@ -12,7 +12,7 @@ let creatures = {
         name: "An Oozing Puddle of Sewage",
         level: 1,
         xp: 25,
-        skills: [skills["attack"], skills["heal1"]],
+        skills: [GetSkills()["attack"], GetSkills()["heal1"]],
         cohesion: 15,
         cohesionMax: 15,
         appearance: (context, player, creature) => {
@@ -35,7 +35,7 @@ let creatures = {
         name: "A Quivering Blob of Sewage",
         level: 5,
         xp: 300,
-        skills: [skills["attack"], skills["heal1"]],
+        skills: [GetSkills()["attack"], GetSkills()["heal1"]],
         cohesion: 90,
         cohesionMax: 90,
         appearance: (context, player, creature) => {
@@ -58,7 +58,7 @@ let creatures = {
         name: "The Spectre of Death",
         level: 99,
         xp: 1,
-        skills: [skills["attack"]],
+        skills: [GetSkills()["attack"]],
         cohesion: 999999,
         cohesionMax: 999999,
         appearance: (context, player, creature) => {

@@ -9,8 +9,6 @@ function PendingOverlay() {
 function UpdateOverlay() {
     isShowing = true;
     if(overlayQueue.length == 0) {
-        console.log("[overlay] Dumping overlay time queue.");
-        console.log(overlayTimes);
         document.getElementById('overlay').style.height = '0';
         overlayQueue = [];
         overlayTimes = [];  

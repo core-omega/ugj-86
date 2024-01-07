@@ -12,7 +12,7 @@ function RunStoryIntro() {
     ShowOverlay("<span style='color:red'>YOU DIED</span>", 5.0);
     ShowOverlay("Per the Code of Afterlife Regulations, Section 317992, Subsection (J), you are to remain in purgatory at your place of demise.", 8.0);
     ShowOverlay("In this case, that means you are stuck in the local city sewer system for the next few million years or so.  Sucks to be you.", 8.0);
-    ShowOverlay("'W', 'A', 'S', 'D' to move.  'Spacebar' to interact.  'I' for inventory.  'C' for character information.  <br /><br />Have fun exploring your new home, friend!", 8.0)
+    ShowOverlay("'W', 'A', 'S', 'D' to move.  'Spacebar' to interact.  'C' for character information.  Find and interact with the red squares to move to the next floor.<br /><br />Have fun exploring your new home, friend!", 8.0)
     setTimeout(() => {audio.loopTrack('Adventure');}, 63000);
 }
 

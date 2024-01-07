@@ -3,18 +3,21 @@ import { ForceShowOverlay } from "/modules/display/show";
 import { GetPhysicsManager } from "/modules/physics/physics";
 import { GetInputManager } from "/modules/world/input";
 import { GetFloorMap } from "/modules/world/floor";
+import { GetAudioManager } from "/modules/world/audio";
+import { PendingOverlay, ForceHideOverlay } from "/modules/display/show";
+import { EncounterManager, GetEncounterManager } from "/modules/world/encounter";
+
 import * as THREE from 'three';
 import Mustache from '/lib/mustache';
-import { PendingOverlay, ForceHideOverlay } from "../display/show";
-import { EncounterManager, GetEncounterManager } from "../world/encounter";
 
 class Player {
-    static RADIUS = 0.1;
+    static RADIUS = 0.2;
     static COHESION_START = 250;  // hp
     static FORCE_START = 10;      // normal attack power
     static AFFINITY_START = 10;   // special attack power
-    static MOVEMENT_RATE = 0.00000002;  // FIXME: ... I feel like I might be doing something wrong ... ?
+    static MOVEMENT_RATE = 0.00002;  // FIXME: ... I feel like I might be doing something wrong ... ?
     static MAX_TOGGLE_RATE = 0.5;
+    static MIN_INTERACT_DISTANCE = 1.1;
 
     constructor() { 
         this.cohesionMax = Player.COHESION_START;
@@ -45,15 +48,23 @@ class Player {
         );
     }
 
-    create() {
+    canInteract(location) {
+        if(this.distance(this.position, location) < Player.MIN_INTERACT_DISTANCE) {
+            return true;
+        }
+        return false;
+    }
+
+    createPhysicsObject() {
         let floor = GetFloorMap();
         let entry = floor.getEntry();
         let physics = GetPhysicsManager();
-        this.playerId = physics.addDynamicObject(entry[1], entry[0], Player.RADIUS);
-        this.position[0] = entry[0];
-        this.position[1] = entry[1];
         let input = GetInputManager();
         let encounter = GetEncounterManager();
+
+        this.playerId = physics.addDynamicObject(entry[1], entry[0], Player.RADIUS);
+
+        Matter.Events.off(physics.getEngine(), 'beforeUpdate');
 
         Matter.Events.on(physics.getEngine(), 'beforeUpdate', event => {
             // Don't process input if we're in the middle of an encounter.
@@ -99,6 +110,15 @@ class Player {
         });
     }
 
+    create() {
+        let floor = GetFloorMap();
+        let entry = floor.getEntry();
+
+        this.position[0] = entry[0];
+        this.position[1] = entry[1];
+        this.createPhysicsObject();
+    }
+
     renderInit(scene) {
         console.log("[player] Initializing render objects.");
         if(this.needsCreation) {
@@ -125,8 +145,9 @@ class Player {
         this.traveled += (this.distance(this.position, [obj.position.y, obj.position.x])) / 100;
         this.position[0] = obj.position.y;
         this.position[1] = obj.position.x;
+        let cameraDistance = 18 + (12 * input.getScroll());
         GetRenderManager().getCamera().lookAt(this.playerMesh.position);
-        GetRenderManager().getCamera().position.set(this.playerMesh.position.x , this.playerMesh.position.y + 30, this.playerMesh.position.z - 30);
+        GetRenderManager().getCamera().position.set(this.playerMesh.position.x , this.playerMesh.position.y + cameraDistance, this.playerMesh.position.z - cameraDistance);
         this.playerMesh.position.x = this.position[0];
         this.playerMesh.position.y = 0;
         this.playerMesh.position.z = this.position[1];
@@ -143,8 +164,10 @@ class Player {
         if(PendingOverlay()) {
             return;
         }
-        // FIXME: make the repetition check part of the input manager.
-        if(input.isKeyDown('KeyC') && ((window.performance.now() - this.toggled['c']) / 1000.0) > Player.MAX_TOGGLE_RATE) {
+        if(input.isKeyDown('Space')) {
+            floor.interact(this);
+        } 
+        else if(input.isKeyDown('KeyC') && ((window.performance.now() - this.toggled['c']) / 1000.0) > Player.MAX_TOGGLE_RATE) {
             this.toggled['c'] = window.performance.now();
             if(!this.showCharacter) {
                 this.showCharacter = true;
@@ -154,9 +177,9 @@ class Player {
                 this.showCharacter = false;
                 ForceHideOverlay();
             } 
-        }
-
-        if(input.isKeyDown('KeyI') && ((window.performance.now() - this.toggled['i']) / 1000.0) > Player.MAX_TOGGLE_RATE) {
+            
+        } 
+        else if(input.isKeyDown('KeyI') && ((window.performance.now() - this.toggled['i']) / 1000.0) > Player.MAX_TOGGLE_RATE) {
             this.toggled['i'] = window.performance.now();
             if(!this.showInventory) {
                 this.showInventory = true;
@@ -171,6 +194,7 @@ class Player {
     }
 
     inventory() {
+        let audio = GetAudioManager();
         console.log("[player] Showing inventory sheet.");
         var output = `
         <div class='inventory'>
@@ -196,14 +220,16 @@ class Player {
         ForceShowOverlay(output);
 
         document.getElementById('close-button').addEventListener('click', () => {
+            audio.playSound("Selection");
             console.log("[player] Hiding inventory.");
             this.toggled['i'] = window.performance.now();
-            this.showCharacter = false;
+            this.showInventory = false;
             ForceHideOverlay();
         }, false);
     }
 
     character() {
+        let audio = GetAudioManager();
         this.traveledShort = Math.round(this.traveled * 100) / 100.0;
         console.log("[player] Showing character sheet.");
         const output = Mustache.render(`
@@ -220,6 +246,7 @@ class Player {
         ForceShowOverlay(output);
 
         document.getElementById('close-button').addEventListener('click', () => {
+            audio.playSound("Selection");
             console.log("[player] Hiding character sheet.");
             this.toggled['c'] = window.performance.now();
             this.showCharacter = false;

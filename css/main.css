@@ -64,22 +64,24 @@ body {
 .text-container {
     position: fixed;
     bottom: 0px;
-    height: 100px;
+    background-color: #000000;
+    opacity: 0.7;
+    height: 50px;
     width: 100%;
 }
 
  .text-portrait {
     height: 100%;
-    width: 125px;
-    float: left;
+    width: 10px;
  }
 
  .text-display {
     height: 100%;
     margin: 8px;
-    margin-left: 133px;
     color: white;
     font-family: monospace;
+    text-align: center;
+    font-size: 1.0em;
  }
 
 .sewer-title {

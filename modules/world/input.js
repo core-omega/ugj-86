@@ -1,6 +1,7 @@
 class InputManager {
     constructor() {
         this.keys = new Set();
+        this.scroll = 1.0;
         this.callbacks = {};
     }
 
@@ -13,6 +14,20 @@ class InputManager {
             //console.log("[input] keyup: " + event.code);
             this.keys.delete(event.code);
         });
+        document.addEventListener("wheel", event => {
+            this.scroll += event.deltaY * 0.001;
+            if(this.scroll > 1.0) {
+                this.scroll = 1.0;
+            }
+            if(this.scroll < 0.0) {
+                this.scroll = 0.0;
+            }
+            //console.log(this.scroll);
+        });
+    }
+
+    getScroll() {
+        return this.scroll;
     }
 
     isKeyDown(code) {

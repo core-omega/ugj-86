@@ -1,10 +1,13 @@
 import * as THREE from 'three';
-import { GetPhysicsManager} from '/modules/physics/physics.js';
+import { ShowOverlay } from '/modules/display/show';
+import { GetRenderManager } from '/modules/display/render';
+import { GetPhysicsManager } from '/modules/physics/physics';
+import { GetPlayer } from '/modules/character/player';
 
 class FloorMap {
     static MIN_SEPERATION = 20;
-    static DEFAULT_WIDTH = 100;
-    static DEFAULT_HEIGHT = 100;
+    static DEFAULT_WIDTH = 64;
+    static DEFAULT_HEIGHT = 64;
 
     static TILE_TYPE_WALL = 8;
     static TILE_TYPE_EXIT = 7;
@@ -12,12 +15,16 @@ class FloorMap {
     static TILE_TYPE_FLOOR = 1;
 
     constructor(gridWidth, gridHeight) {
+        this.threeLoader = new THREE.TextureLoader();
+        this.destroyed = false;
+        this.cloudMap = this.threeLoader.load('/texture/Cloud.png');
         this.width = gridWidth;
         this.height = gridHeight;
         this.map = Array(this.height);  // row, column - not the reverse
         for(var i = 0; i < this.height; ++i) {
             this.map[i] = Array(this.width).fill(FloorMap.TILE_TYPE_WALL);
         }
+        this.interactions = [];
 
         this.entry = this.randomTile();
         this.exit = this.randomTile();
@@ -25,8 +32,13 @@ class FloorMap {
             this.exit = this.randomTile();
         }
 
+        this.interactions.push({
+            position: this.exit,
+            callback: ExitFloor
+        });
 
         this.needsRenderInit = true;
+        console.log("[floor] Constructor executed - ready for initialization.");
     }
 
     randomTile() {
@@ -76,6 +88,32 @@ class FloorMap {
         }
     }
 
+    destroy(scene) {
+        this.wallGeometry.dispose();
+        this.shroudGeometry.dispose();
+        this.wallMaterial.dispose();
+        this.exitMaterial.dispose();
+        this.entryMaterial.dispose();
+        this.floorMaterial.dispose();
+        this.destroyed = true;
+
+        for(var i = 0; i < this.wallMesh.length; ++i) {
+            this.rootNode.remove(this.wallMesh[i]);
+        }
+        this.wallMesh = [];
+
+        for(var i = 0; i < this.height; ++i) {
+            for(var j = 0; j < this.width; ++j) {
+                this.shroudMesh[i][j].material.dispose();
+                this.rootNode.remove(this.shroudMesh[i][j]);
+            }
+        }
+
+        let physics = GetPhysicsManager();
+
+        physics.clear();
+    }
+
     renderInit(scene) {
         console.log("[floor] Initializing scene graph ...");
         this.rootNode = new THREE.Object3D();
@@ -100,7 +138,7 @@ class FloorMap {
         for(var i = 0; i < this.height; ++i) {
             this.shroudMesh.push([]);
             for(var j = 0; j < this.width; ++j) {
-                let shroudMaterial = new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 1.0 });
+                let shroudMaterial = new THREE.MeshStandardMaterial({ transparent: true, opacity: 1.0, map: this.cloudMap });
                 let mesh = new THREE.Mesh(this.shroudGeometry, shroudMaterial);
                 mesh.position.x = i;
                 mesh.position.z = j;
@@ -149,9 +187,50 @@ class FloorMap {
     }
 
     render(scene) {
+        if(this.destroyed) {
+            console.error("Rendering destroyed floor ...");
+            console.trace();
+            return;
+        }
         if(this.needsRenderInit) {
+            console.log("[floor] Initializing rendering subsystem.");
             this.needsRenderInit = false;
             this.renderInit(scene);
+        }
+        
+        let player = GetPlayer();
+        let available = false;
+        for(var i = 0; i < this.interactions.length; ++i) {
+            if(player.canInteract(this.interactions[i].position)) {
+                available = true;
+            }
+        }
+
+        if(available) {
+            document.getElementById('text-display').innerHTML = "Press spacebar to interact.";
+        }
+        else {
+            document.getElementById('text-display').innerHTML = "";
+        }
+    }
+
+    interactionsAvailable(player) {
+        for(var i = 0; i < this.interactions.length; ++i) {
+            if(player.canInteract(this.interactions[i].position)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    interact(player) {
+        for(var i = 0; i < this.interactions.length; ++i) {
+            if(player.canInteract(this.interactions[i].position)) {
+                console.log("[floor] Launching interaction.");
+                this.interactions[i].callback();
+                return;
+            }
         }
     }
 
@@ -251,6 +330,16 @@ class FloorMap {
 
 }
 
+function ExitFloor() {
+    ShowOverlay("Moving to next floor ...", 3);
+    GetFloorMap().destroy();
+    GenerateFloorMap(mapWidth, mapHeight);
+    let render = GetRenderManager();
+    render.register('FloorMap', GetFloorMap());
+    let player = GetPlayer();
+    player.createPhysicsObject();
+}
+
 function GenerateFloorMap(mapWidth, mapHeight) {
     map = new FloorMap(mapWidth, mapHeight);
     map.generate();
@@ -262,6 +351,14 @@ function GetFloorMap() {
 
 let mapWidth = FloorMap.DEFAULT_WIDTH;
 let mapHeight = FloorMap.DEFAULT_HEIGHT;
-let map = new FloorMap(mapWidth, mapHeight);
+var map = new FloorMap(mapWidth, mapHeight);
 
-export {GenerateFloorMap, GetFloorMap};
+function SetMapWidth(width) {
+    mapWidth = width;
+}
+
+function SetMapHeight(height) {
+    mapHeight = height;
+}
+
+export {GenerateFloorMap, GetFloorMap, SetMapWidth, SetMapHeight};

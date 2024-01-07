@@ -2,6 +2,7 @@ import {ForceShowOverlay, ForceHideOverlay} from "/modules/display/show";
 import {GetAudioManager} from "/modules/world/audio";
 import {GetPlayer} from "/modules/character/player";
 import {GetSkills} from "/modules/encounter/skills";
+import {GetFloorMap} from "/modules/world/floor";
 import {GetCreatures, RESULT_FIGHT, RESULT_NONE, RESULT_RESOLVE} from "/modules/encounter/creatures";
 import Mustache from '/lib/mustache';
 
@@ -49,10 +50,19 @@ class EncounterManager {
 
     /* We use the rendering loop as a general update loop - not terribly clean, but it'll work for now. */
     render() {
-        let player = GetPlayer();
+        this.updateLog();
+
+        let floor = GetFloorMap();
+
+        // Don't show an encounter if we're within range of an object we can interact with.
+        if(floor.interactionsAvailable(GetPlayer())) {
+            return;
+        }
+
+        let player = GetPlayer();        
         if(player.traveled > this.nextEncounter && this.state == EncounterManager.NO_ENCOUNTER) {
             console.log("[encounter] Triggering new encounter.");
-            this.lastEncounter = this.nextEncounter;
+            this.lastEncounter = player.traveled;
             this.nextEncounter = this.lastEncounter + this.gaussian(EncounterManager.ENCOUNTER_RATE, EncounterManager.ENCOUNTER_STDEV);
             if(this.nextEncounter - this.lastEncounter < EncounterManager.ENCOUNTER_MAX_RATE) {
                 this.nextEncounter = this.lastEncounter + EncounterManager.ENCOUNTER_MAX_RATE;
@@ -62,7 +72,6 @@ class EncounterManager {
             this.setup();
         }
 
-        this.updateLog();
     }
 
     updateLog() {
@@ -101,14 +110,15 @@ class EncounterManager {
     }
 
     endFight() {
+        let audio = GetAudioManager();
         document.getElementById('encounter-end').innerHTML = "<div class='encounter-option' id='encounter-end-item'>End Fight</div>";
         this.currentEncounter = null;
         this.state = EncounterManager.NO_ENCOUNTER;
 
         document.getElementById('encounter-end-item').addEventListener('click', event => {
+            audio.playSound("Selection");
             ForceHideOverlay();
         });
-        let audio = GetAudioManager();
         audio.loopTrack("Adventure");
     }
 
@@ -201,12 +211,29 @@ class EncounterManager {
         });
     }
 
+    setEncounter(target) {
+        var tmp = {};
+        tmp.id = target.id;
+        tmp.name = target.name;
+        tmp.level = target.level;
+        tmp.xp = target.xp;
+        tmp.skills = target.skills;
+        tmp.cohesion = target.cohesion;
+        tmp.cohesionMax = target.cohesionMax;
+        tmp.appearance = target.appearance;
+        tmp.idle = target.idle;
+        tmp.talk = target.talk;
+        tmp.leave = target.leave;
+        return tmp;
+    }
+
     setup() {
         let audio = GetAudioManager();
         audio.loopTrack("Encounter");
         this.logOutput = "";
         console.log("[encounter] Setting up new encounter.");
-        this.currentEncounter = GetCreatures()["blob1"];
+        let target = GetCreatures()["blob1"];
+        this.currentEncounter = this.setEncounter(target);
         const output = Mustache.render(`
             <div class='encounter'>
                 <div class='encounter-title'>Encounter</div>

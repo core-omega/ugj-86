@@ -27,9 +27,9 @@ function EntryPoint() {
     ForceHideOverlay();
     let audio = GetAudioManager();
 
-    RunStoryIntro();
+    //RunStoryIntro();
 
-    GenerateFloorMap(96, 96);
+    GenerateFloorMap(64, 64);
     GetInputManager().start();
 
     let physics = GetPhysicsManager();
